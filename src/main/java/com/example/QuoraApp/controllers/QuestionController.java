@@ -25,13 +25,23 @@ public class QuestionController {
     //offset based pagination method
     @GetMapping("/search")
     public Flux<QuestionResponseDTO> searchQuestions(@RequestParam String query, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "0") int size){
-        return questionService.searchQuestions(query,page,size);
+        return questionService.searchQuestions(query,page,size)
+                .doOnComplete(() -> System.out.println("Questions fetched successfully: "))
+                .doOnError(error -> System.out.println("Error fetching questions: " + error));
     }
 
     @GetMapping
     //cursor based pagination method
     public Flux<QuestionResponseDTO> getAllQuestions(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "10") int size){
-        return questionService.getAllQuestions(cursor,size);
+        return questionService.getAllQuestions(cursor,size)
+                .doOnComplete(() -> System.out.println("Questions fetched successfully: "))
+                .doOnError(error -> System.out.println("Error fetching questions: " + error));
     }
 
+    @GetMapping("/{id}")
+    public Mono<QuestionResponseDTO> getQuestionById(@PathVariable String id){
+        return questionService.getQuestionById(id)
+                .doOnSuccess(response -> System.out.println("Question fetched successfully: " + response))
+                .doOnError(error -> System.out.println("Error fetching question: " + error));
+    }
 }

@@ -1,6 +1,6 @@
 package com.example.QuoraApp.config;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -20,10 +20,10 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConfig {
 
-    @Value("{spring.kafka.bootstrap-servers:localhost:9092}")
+    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
     private String bootstrapServer;
 
-    @Value("{spring.kafka.consumer.group-id:view-count-consumer}")
+    @Value("${spring.kafka.consumer.group-id:view-count-consumer}")
     private String groupId;
 
     public static final String TOPIC_NAME = "view-count-topic";
@@ -47,6 +47,7 @@ public class KafkaConfig {
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.example.QuoraApp.events");
 
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
